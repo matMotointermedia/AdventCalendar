@@ -158,17 +158,19 @@ class Day {
 	public $title = NULL;
 	public $legend = NULL;
 	public $text = NULL;
+	public $link = NULL;
 
 	public function __default($day) {
 		$this->day = $day;
 		$this->active = Advent::isActiveDay($day);
 		$this->url = '?'. URL_DAY .'='. ($this->day);
 	}
-	public function __construct($day, $title = NULL, $legend = NULL, $text = NULL) {
+	public function __construct($day, $title = NULL, $legend = NULL, $text = NULL, $link = NULL) {
 		$this->__default($day);
 		$this->title = $title;
 		$this->legend = $legend;
 		$this->text = $text;
+		$this->link = $link;
 	}
 }
 
@@ -239,6 +241,7 @@ abstract class Advent {
 		$title = NULL;
 		$legend = NULL;
 		$text = NULL;
+		$link = NULL;
 		// check if we have info to display
 		if (file_exists(CALENDAR_FILE)) {
 			$file = json_decode(file_get_contents(CALENDAR_FILE));
@@ -247,9 +250,10 @@ abstract class Advent {
 				if (!empty($file->{$day}->title)) { $title = htmlspecialchars($file->{$day}->title); }
 				if (!empty($file->{$day}->legend)) { $legend = htmlspecialchars($file->{$day}->legend); }
 				if (!empty($file->{$day}->text)) { $text = $file->{$day}->text; }
+				if (!empty($file->{$day}->link)) { $link = $file->{$day}->link; }
 			}
 		}
-		return new Day($day, $title, $legend, $text);
+		return new Day($day, $title, $legend, $text, $link);
 	}
 
 	static function getDayHtml($day) {
@@ -259,6 +263,7 @@ abstract class Advent {
 		$title = $d->title;
 		$legend = $d->legend;
 		$text = $d->text;
+		$link = $d->link;
 
 		// set the day number block
 		$result .= '<a href="./?'. URL_DAY.'='. $day .'" class="day-row '. self::getDayColorClass($day, TRUE) .'"><span>'. $day .'</span></a>';
@@ -280,6 +285,9 @@ abstract class Advent {
 
 		// do we have a text?
 		if (!empty($text)) { $result .= '<div class="text panel panel-default"><div class="panel-body">'.$text.'</div></div>'; }
+
+		// do we have a link?
+		if (!empty($link)) { $result .= '<div class="text panel panel-default"><a href="'.$link.'">LINK</a></div>'; }
 
 		// we do not forget the pagination
 		$result .= '<ul class="pager"><li class="previous';
